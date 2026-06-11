@@ -2,15 +2,70 @@ package modelo;
 
 import java.util.ArrayList;
 
+/**
+ * Representa la cuenta de acceso de un usuario (credenciales y datos básicos de
+ * login) junto con su titular y tipo.
+ *
+ * Corregido en la versión 0.2: el método setTitular se asignaba a sí mismo;
+ * ahora asigna correctamente this.titular.
+ *
+ * @author Raul
+ * @version 0.2
+ */
 public class Cuenta {
 	
 	private String titular;
 	private int NumCuenta;
     private String password;
     private String username;
+    private String email;
     private boolean estado;
-    private ArrayList<CuentaBancaria> cuentasBancarias;
+    private Usuario usuario;
+    private String tipo;
+    
+   
+    
+    
+
+	public Cuenta(String titular, int numCuenta, String password, String username, String email, boolean estado, Usuario usuario) {
+		this.titular = titular;
+		NumCuenta = numCuenta;
+		this.password = password;
+		this.username = username;
+		this.email = email;
+		this.estado = estado;
+		this.usuario = usuario;
+	}
+	/**
+	 * 
+	 * @param email
+	 * @param contraseña
+	 * @param id
+	 * @param tipo
+	 * 
+	 * @version 0.1
+	 */
 	
+	public Cuenta(String email, String contraseña) {
+		this.email = email;
+		this.password = contraseña;
+	}
+	
+	public Cuenta(int numCuenta, String email, String password, String tipo) {
+		super();
+		NumCuenta = numCuenta;
+		this.email = email;
+		this.password = password;
+		this.tipo = tipo;
+	}
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -35,12 +90,21 @@ public class Cuenta {
 		this.estado = estado;
 	}
 
-	public ArrayList<CuentaBancaria> getCuentasBancarias() {
-		return cuentasBancarias;
+
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCuentasBancarias(ArrayList<CuentaBancaria> cuentasBancarias) {
-		this.cuentasBancarias = cuentasBancarias;
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	public Cuenta() {
@@ -56,7 +120,13 @@ public class Cuenta {
 	 * 
 	 */
 	//TODO: mover esto a transferencia 
-	public String Ingresar(Cuenta C, double cantidad) {
+	/**
+	 * 
+	 * @param C
+	 * @param cantidad
+	 * @return
+	 * 
+	 * public String Ingresar(Cuenta C, double cantidad) {
 		C.setSaldo(cantidad+C.getSaldo());
 		return "El nuevo saldo es de: "+C.getSaldo();
 	}
@@ -68,49 +138,24 @@ public class Cuenta {
 			return "Error Cantidad insuficiente ";
 		}
 	}
+	 */
+	
 	
 
 	/**
 	 * @return the titular
 	 */
 	public String getTitular() {
-		return Titular;
+		return titular;
 	}
 
 	/**
 	 * @param titular the titular to set
 	 */
 	public void setTitular(String titular) {
-		Titular = titular;
+		this.titular = titular;
 	}
 
-	/**
-	 * @return the saldo
-	 */
-	public double getSaldo() {
-		return Saldo;
-	}
-
-	/**
-	 * @param saldo the saldo to set
-	 */
-	public void setSaldo(double saldo) {
-		Saldo = saldo;
-	}
-
-	/**
-	 * @return the interes
-	 */
-	public double getInteres() {
-		return Interes;
-	}
-
-	/**
-	 * @param interes the interes to set
-	 */
-	public void setInteres(double interes) {
-		Interes = interes;
-	}
 
 	/**
 	 * @return the numCuenta

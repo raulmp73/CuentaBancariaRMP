@@ -1,0 +1,9 @@
+# Plantilla de configuracion de la base de datos.
+# Copia este fichero como "config.properties" y rellena tus valores reales.
+# El fichero config.properties NO se sube al repositorio (esta en .gitignore).
+db.ip=127.0.0.1
+db.puerto=3306
+db.nombre=nombre_base_datos
+db.user=usuario
+db.password=tu_password
+db.options=?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true

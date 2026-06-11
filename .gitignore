@@ -1,0 +1,13 @@
+# Compilados / build
+bin/
+*.class
+
+# Configuración con credenciales (NO subir)
+config.properties
+
+# IDE / editor
+.vscode/
+
+# Artefactos generados y copias de seguridad
+*.pdf
+_backup_src_20260607_103941/
