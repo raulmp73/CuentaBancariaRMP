@@ -2,36 +2,62 @@ package modelo;
 
 import java.util.Date;
 
+/**
+ * Representa una operación bancaria (ingreso, retiro, transferencia, etc.)
+ * asociada a una cuenta, con su importe, concepto y fecha.
+ *
+ * @author Raul
+ * @version 0.2
+ */
 public class Operacion {
+
     private int idOperacion;
+    private int idCuentaOperacion;
+    private Integer idCuentaDestino; // Integer porque puede ser NULL
     private TipoOperacion tipo;
+    private String concepto;
+    private Date fechaHora;
     private double importe;
-    private Date fecha;
 
     public Operacion() {
     }
 
-    public void ejecutar() {
+    public Operacion(int idOperacion, int idCuentaOperacion, Integer idCuentaDestino,
+                     TipoOperacion tipo, String concepto, Date fechaHora, double importe) {
+        this.idOperacion = idOperacion;
+        this.idCuentaOperacion = idCuentaOperacion;
+        this.idCuentaDestino = idCuentaDestino;
+        this.tipo = tipo;
+        this.concepto = concepto;
+        this.fechaHora = fechaHora;
+        this.importe = importe;
     }
 
-    public boolean validar() {
-        return true;
+    public int getIdOperacion() {
+        return idOperacion;
     }
 
-    public int getIdOperacion() { return idOperacion; }
-    public void setIdOperacion(int idOperacion) { this.idOperacion = idOperacion; }
+    public int getIdCuentaOperacion() {
+        return idCuentaOperacion;
+    }
 
-    public TipoOperacion getTipo() { return tipo; }
-    public void setTipo(TipoOperacion tipo) { this.tipo = tipo; }
+    public Integer getIdCuentaDestino() {
+        return idCuentaDestino;
+    }
 
-    public double getImporte() { return importe; }
-    public void setImporte(double importe) { this.importe = importe; }
+    public TipoOperacion getTipo() {
+        return tipo;
+    }
 
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
+    public String getConcepto() {
+        return concepto;
+    }
 
-    @Override
-    public String toString() {
-        return "Operacion [idOperacion=" + idOperacion + ", tipo=" + tipo + ", importe=" + importe + ", fecha=" + fecha + "]";
+    public Date getFechaHora() {
+        return fechaHora;
+    }
+
+    public double getImporte() {
+        return importe;
     }
 }

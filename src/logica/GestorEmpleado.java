@@ -3,6 +3,12 @@ package logica;
 import java.util.ArrayList;
 import modelo.Empleado;
 
+/**
+ * Gestiona la lógica relacionada con los empleados del sistema.
+ *
+ * @author Raul
+ * @version 0.2
+ */
 public class GestorEmpleado {
     private ArrayList<Empleado> empleados;
 

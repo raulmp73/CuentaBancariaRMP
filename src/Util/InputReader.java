@@ -2,30 +2,45 @@ package Util;
 
 import java.util.Scanner;
 
+/**
+ * Utilidad para leer datos introducidos por teclado (enteros, decimales y
+ * cadenas) validando el tipo.
+ *
+ * Corregido en la versión 0.2: métodos ReadInt y ReadDouble renombrados a
+ * readInt y readDouble (convención de nombres camelCase).
+ *
+ * @author Raul
+ * @version 0.2
+ */
 public class InputReader {
 	
-	static Scanner sc = new Scanner(System.in);
 	
-	public int ReadInt() {
+	public int readInt(Scanner sc) {
 		while (!sc.hasNextInt()) {
 			System.out.println("Intentalo de nuevo: ");
 			sc.next();
 		} 
 		return sc.nextInt();
 	}
-	public double ReadDouble() {
+	public double readDouble(Scanner sc) {
 		while (!sc.hasNextDouble()) {
 			System.out.println("Intentalo de nuevo: ");
 			sc.next();
 		} 
 		return sc.nextDouble();
 	}
+	public String readString(Scanner sc) {
+		String input = sc.nextLine();
+
+		return input.trim();
+
+	}
 	/**
 	 * 
 	 * @param input
 	 * @return
 	 */
-	public static String readString() {
+	public String readSoloLetra(Scanner sc) {
 		//TODO: que me lea una linea entera
 		String input = sc.nextLine();
 
