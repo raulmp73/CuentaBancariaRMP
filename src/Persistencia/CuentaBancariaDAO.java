@@ -129,6 +129,103 @@ public class CuentaBancariaDAO {
     }
 
     /**
+     * Realiza un pago con tarjeta desde una cuenta bancaria.
+     *
+     * Funciona igual que una retirada (resta el importe del saldo), pero registra
+     * la operación como PAGO_TARJETA y sin cuenta destino, porque el dinero sale
+     * hacia un comercio, no hacia otra cuenta del banco. Saldo y operación se
+     * guardan dentro de la misma transacción.
+     *
+     * @param idCuenta id_cuenta desde la que se paga
+     * @param cantidad importe del pago (debe ser positivo)
+     * @param concepto comercio o descripción del pago
+     * @return true si el pago se ha guardado, false si falla
+     *
+     * @author Raul
+     * @version 0.2
+     */
+    public boolean pagarConTarjeta(int idCuenta, double cantidad, String concepto) {
+        // Un pago con tarjeta RESTA del saldo (delta negativo) y registra PAGO_TARJETA
+        return registrarMovimiento(idCuenta, -cantidad, "PAGO_TARJETA", concepto, cantidad);
+    }
+
+    /**
+     * Envía dinero de una cuenta a otra cuenta REAL del banco (transferencia o
+     * Bizum).
+     *
+     * A diferencia de un ingreso o un retiro, aquí se tocan DOS cuentas: se resta
+     * el importe del origen y se suma al destino, y se registra una única operación
+     * con su id_cuenta_destino. Las tres acciones van dentro de una misma
+     * transacción: si algo falla, se deshace todo (rollback), de forma que el
+     * dinero nunca "desaparece" ni se duplica.
+     *
+     * El tipo ('TRANSFERENCIA' o 'BIZUM') se recibe por parámetro, de modo que este
+     * mismo método sirve para las dos formas de pago entre cuentas.
+     *
+     * @param idOrigen  id_cuenta desde la que sale el dinero
+     * @param idDestino id_cuenta que recibe el dinero
+     * @param cantidad  importe a enviar (debe ser positivo)
+     * @param tipo      tipo de operación a registrar ('TRANSFERENCIA' o 'BIZUM')
+     * @param concepto  texto descriptivo de la operación
+     * @return true si el envío se ha confirmado, false si se ha deshecho
+     *
+     * @author Raul
+     * @version 0.2
+     */
+    public boolean transferir(int idOrigen, int idDestino, double cantidad, String tipo, String concepto) {
+
+        String restarOrigen = "UPDATE cuenta_bancaria SET saldo = saldo - ? WHERE id_cuenta = ?";
+        String sumarDestino = "UPDATE cuenta_bancaria SET saldo = saldo + ? WHERE id_cuenta = ?";
+
+        String insertOperacion = "INSERT INTO operacion "
+                + "(id_cuenta_operacion, id_cuenta_destino, tipo, concepto, fecha_hora, importe) "
+                + "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+        try (Connection con = ConexionBD.getConnection()) {
+
+            // Desactivamos el autocommit para controlar la transacción a mano
+            con.setAutoCommit(false);
+
+            try (PreparedStatement psOrigen = con.prepareStatement(restarOrigen);
+                 PreparedStatement psDestino = con.prepareStatement(sumarDestino);
+                 PreparedStatement psOperacion = con.prepareStatement(insertOperacion)) {
+
+                // 1) Restamos el importe de la cuenta de origen
+                psOrigen.setDouble(1, cantidad);
+                psOrigen.setInt(2, idOrigen);
+                psOrigen.executeUpdate();
+
+                // 2) Sumamos el importe a la cuenta de destino
+                psDestino.setDouble(1, cantidad);
+                psDestino.setInt(2, idDestino);
+                psDestino.executeUpdate();
+
+                // 3) Registramos UNA operación con origen y destino
+                psOperacion.setInt(1, idOrigen);
+                psOperacion.setInt(2, idDestino);
+                psOperacion.setString(3, tipo);
+                psOperacion.setString(4, concepto);
+                psOperacion.setDouble(5, cantidad);
+                psOperacion.executeUpdate();
+
+                // Si las tres consultas han ido bien, confirmamos los cambios
+                con.commit();
+                return true;
+
+            } catch (Exception e) {
+                // Algo ha fallado: deshacemos el envío completo (origen, destino y operación)
+                con.rollback();
+                System.out.println("Error en la transferencia, cambios deshechos: " + e.getMessage());
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error de conexión: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Recarga desde la BD la lista de operaciones de una cuenta.
      *
      * Se usa tras un ingreso o retiro para que el array en memoria refleje
@@ -140,6 +237,42 @@ public class CuentaBancariaDAO {
      */
     public ArrayList<Operacion> cargarOperaciones(int idCuenta) {
         return operacionDAO.cargarOperaciones(idCuenta);
+    }
+
+    /**
+     * Busca el id_cuenta de una cuenta bancaria a partir de su IBAN.
+     *
+     * Se usa en las transferencias y Bizum: el usuario teclea el IBAN de destino y
+     * este método lo traduce al id_cuenta que necesita la transacción. Si ningún
+     * IBAN coincide, devuelve -1 para que la capa lógica lo trate como destino
+     * inexistente.
+     *
+     * @param iban IBAN de la cuenta destino (tal cual lo teclea el usuario)
+     * @return id_cuenta de esa cuenta, o -1 si no existe ninguna con ese IBAN
+     *
+     * @author Raul
+     * @version 0.2
+     */
+    public int buscarIdPorIban(String iban) {
+
+        String sql = "SELECT id_cuenta FROM cuenta_bancaria WHERE iban = ?";
+
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, iban);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_cuenta");
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al buscar la cuenta por IBAN: " + e.getMessage());
+        }
+
+        return -1; // no existe ninguna cuenta con ese IBAN
     }
 
     /**

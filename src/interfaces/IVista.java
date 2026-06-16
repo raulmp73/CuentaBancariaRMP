@@ -22,6 +22,8 @@ public interface IVista {
     void salirAplicacion();
     void InicioCliente(Cliente c);
     int menuCuentaBancaria(CuentaBancaria cb);
+    int menuFormasPago();
     public void mostrarOperaciones(ArrayList<Operacion> operaciones, int idCuentaActual);
     double pedirImporte(String mensaje);
+    String pedirTexto(String mensaje);
 }

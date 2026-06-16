@@ -140,9 +140,51 @@ public class ControladorCliente {
 				break;
 			}
 
-			case 4:
-				System.out.println("Enviar dinero");
+			case 4: {
+				int formaPago = vista.menuFormasPago();
+				switch (formaPago) {
+
+				case 1: { // Transferencia: enviar dinero a otra cuenta del banco por su IBAN
+					String ibanDestino = vista.pedirTexto("IBAN de destino: ");
+					double cantidad = vista.pedirImporte("¿Cuánto quieres transferir? ");
+					String concepto = vista.pedirTexto("Concepto: ");
+					try {
+						gestorCuentaBancaria.transferir(cb, ibanDestino, cantidad, concepto);
+						vista.mostrarMensaje("Transferencia realizada. Nuevo saldo: " + cb.getSaldo() + " €");
+					} catch (ExcepcionesBanco e) {
+						vista.mostrarMensaje(e.getMessage());
+					}
+					break;
+				}
+
+				case 2: { // Bizum: mismo envío entre cuentas, registrado como BIZUM
+					String ibanDestino = vista.pedirTexto("IBAN de destino: ");
+					double cantidad = vista.pedirImporte("¿Cuánto quieres enviar por Bizum? ");
+					String concepto = vista.pedirTexto("Concepto: ");
+					try {
+						gestorCuentaBancaria.enviarBizum(cb, ibanDestino, cantidad, concepto);
+						vista.mostrarMensaje("Bizum enviado. Nuevo saldo: " + cb.getSaldo() + " €");
+					} catch (ExcepcionesBanco e) {
+						vista.mostrarMensaje(e.getMessage());
+					}
+					break;
+				}
+
+				case 3: { // Pago con tarjeta: el dinero sale a un comercio, sin cuenta destino
+					double cantidad = vista.pedirImporte("¿Cuánto quieres pagar? ");
+					String concepto = vista.pedirTexto("Comercio / concepto: ");
+					try {
+						gestorCuentaBancaria.pagarConTarjeta(cb, cantidad, concepto);
+						vista.mostrarMensaje("Pago con tarjeta realizado. Nuevo saldo: " + cb.getSaldo() + " €");
+					} catch (ExcepcionesBanco e) {
+						vista.mostrarMensaje(e.getMessage());
+					}
+					break;
+				}
+
+				}
 				break;
+			}
 
 			}
 			// vista.mostrarOperaciones(cb.getOperaciones());

@@ -2,6 +2,7 @@ package Validadores;
 
 import java.util.ArrayList;
 
+import Excepciones.CuentaDestinoInvalida;
 import Excepciones.EmailyContraseñaInvalidos;
 import Excepciones.ExisteCuenta;
 import Excepciones.ImporteInvalido;
@@ -147,6 +148,31 @@ public class InputValid {
 
 		if (cb.get(i) == null) {
 			throw new ExisteCuenta("No existe ninguna cuenta con ese ID");
+		}
+	}
+
+	/**
+	 * Valida que la cuenta destino de un pago (transferencia o Bizum) sea válida.
+	 *
+	 * El destino se identifica por su IBAN; el DAO lo busca y devuelve el id_cuenta
+	 * correspondiente, o -1 si ese IBAN no existe en el banco. Aquí se comprueba que
+	 * el destino exista y que no sea la propia cuenta de origen.
+	 *
+	 * @param idDestino id_cuenta de la cuenta destino (-1 si el IBAN no existe)
+	 * @param idOrigen  id_cuenta de la cuenta desde la que se envía el dinero
+	 * @throws CuentaDestinoInvalida si el IBAN no existe o coincide con el origen
+	 *
+	 * @author Raul
+	 * @version 0.2
+	 */
+	public void validarCuentaDestino(int idDestino, int idOrigen) {
+
+		if (idDestino <= 0) {
+			throw new CuentaDestinoInvalida("No existe ninguna cuenta con ese IBAN");
+		}
+
+		if (idDestino == idOrigen) {
+			throw new CuentaDestinoInvalida("No puedes enviarte dinero a tu propia cuenta");
 		}
 	}
 }

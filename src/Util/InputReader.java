@@ -35,6 +35,27 @@ public class InputReader {
 		return input.trim();
 
 	}
+
+	/**
+	 * Lee una línea de texto completa (por ejemplo un IBAN o un concepto),
+	 * absorbiendo el salto de línea que dejan pendiente readInt/readDouble.
+	 *
+	 * Al mezclar nextInt()/nextDouble() con la lectura de líneas, el Scanner deja
+	 * un "\n" sin consumir; si no se limpia, el primer nextLine() devolvería una
+	 * cadena vacía. Por eso, si la primera línea viene vacía, se lee la siguiente.
+	 *
+	 * @param sc scanner de entrada
+	 * @return el texto introducido por el usuario, sin espacios sobrantes
+	 */
+	public String readLinea(Scanner sc) {
+		String linea = sc.nextLine(); // consume lo que quede de la línea anterior (p. ej. tras un readInt)
+
+		if (linea.isEmpty()) {
+			linea = sc.nextLine(); // solo había un salto pendiente: ahora sí leemos el texto real
+		}
+
+		return linea.trim();
+	}
 	/**
 	 * 
 	 * @param input
