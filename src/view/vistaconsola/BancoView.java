@@ -59,14 +59,16 @@ public class BancoView implements IVista {
 
     @Override
     public int menuEmpleado() {
-        msj.msj("\n===================");
-        msj.msj("= Menú Empleado   =");
-        msj.msj("===================");
-        msj.msj("1. Agregar nuevo cliente / cuenta");
-        msj.msj("2. Operar con cuentas de clientes");
-        msj.msj("3. Salir");
+        msj.msj("\n══════════════════════════════");
+        msj.msj("=        Menú Empleado       =");
+        msj.msj("══════════════════════════════");
+        msj.msj("1. Crear cliente nuevo");
+        msj.msj("2. Añadir cuenta a un cliente");
+        msj.msj("3. Gestionar cuentas de un cliente");
+        msj.msj("4. Dar efectivo a un cliente");
+        msj.msj("0. Salir");
         msj.msjSinSalto("\nElige una opción: ");
-        return capturarEntero();
+        return input.readInt(sc);
     }
 
     @Override
@@ -121,6 +123,12 @@ public class BancoView implements IVista {
     }
 
     @Override
+    public String pedirTexto(String mensaje) {
+        msj.msjSinSalto(mensaje);
+        return input.readLinea(sc);
+    }
+
+    @Override
     public void salirAplicacion() {
         msj.msj("\nHas salido de la aplicación. ¡Hasta pronto!");
         sc.close();
@@ -145,13 +153,30 @@ public class BancoView implements IVista {
         msj.msj("  1. Ver operaciones");
         msj.msj("  2. Ingresar dinero");
         msj.msj("  3. Retirar dinero");
-        msj.msj("  4. Enviar dinero");
+        msj.msj("  4. Pagar / enviar dinero");
         msj.msj("  0. Salir");
         msj.msj("╚════════════════════════════════════════════╝");
 
         msj.msjSinSalto("Elige una opción: ");
         return input.readInt(sc);
     }
+
+    @Override
+    public int menuFormasPago() {
+
+        msj.msj("\n╔════════════════════════════════════════════╗");
+        msj.msj("║              FORMAS DE PAGO              ║");
+        msj.msj("╠════════════════════════════════════════════╣");
+        msj.msj("  1. Transferencia");
+        msj.msj("  2. Bizum");
+        msj.msj("  3. Pago con tarjeta");
+        msj.msj("  0. Volver");
+        msj.msj("╚════════════════════════════════════════════╝");
+
+        msj.msjSinSalto("Elige una opción: ");
+        return input.readInt(sc);
+    }
+
     @Override
     public void mostrarOperaciones(ArrayList<Operacion> operaciones, int idCuentaActual) {
 
