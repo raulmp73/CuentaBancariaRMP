@@ -3,6 +3,7 @@ package Persistencia;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import modelo.Cliente;
@@ -237,6 +238,68 @@ public class CuentaBancariaDAO {
      */
     public ArrayList<Operacion> cargarOperaciones(int idCuenta) {
         return operacionDAO.cargarOperaciones(idCuenta);
+    }
+
+    /**
+     * Crea una cuenta bancaria nueva para un cliente y la enlaza con él en la tabla
+     * acceso, ambas inserciones dentro de una misma transacción.
+     *
+     * @param idCliente    id del cliente (= id_cuenta_usuario)
+     * @param numeroCuenta número de cuenta generado
+     * @param iban         IBAN generado
+     * @param cvv          cvv generado
+     * @param saldoInicial saldo con el que se abre la cuenta
+     * @return id_cuenta de la cuenta creada, o -1 si falla
+     *
+     * @author Raul
+     * @version 0.2
+     */
+    public int crearCuentaParaCliente(int idCliente, String numeroCuenta, String iban,
+                                      String cvv, double saldoInicial) {
+
+        String insCuenta = "INSERT INTO cuenta_bancaria (numero_cuenta, iban, saldo, estado, cvv) "
+                + "VALUES (?, ?, ?, 1, ?)";
+        String insAcceso = "INSERT INTO acceso (id_cliente, id_cuenta) VALUES (?, ?)";
+
+        try (Connection con = ConexionBD.getConnection()) {
+
+            con.setAutoCommit(false);
+
+            try (PreparedStatement psCuenta = con.prepareStatement(insCuenta, Statement.RETURN_GENERATED_KEYS);
+                 PreparedStatement psAcceso = con.prepareStatement(insAcceso)) {
+
+                // 1) Creamos la cuenta bancaria
+                psCuenta.setString(1, numeroCuenta);
+                psCuenta.setString(2, iban);
+                psCuenta.setDouble(3, saldoInicial);
+                psCuenta.setString(4, cvv);
+                psCuenta.executeUpdate();
+
+                int idCuenta = 0;
+                try (ResultSet rs = psCuenta.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        idCuenta = rs.getInt(1);
+                    }
+                }
+
+                // 2) Enlazamos la cuenta con el cliente en la tabla acceso
+                psAcceso.setInt(1, idCliente);
+                psAcceso.setInt(2, idCuenta);
+                psAcceso.executeUpdate();
+
+                con.commit();
+                return idCuenta;
+
+            } catch (Exception e) {
+                con.rollback();
+                System.out.println("Error al crear la cuenta del cliente, cambios deshechos: " + e.getMessage());
+                return -1;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error de conexión al crear la cuenta: " + e.getMessage());
+            return -1;
+        }
     }
 
     /**

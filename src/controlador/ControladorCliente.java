@@ -44,9 +44,17 @@ public class ControladorCliente {
 	 * @version 0.2
 	 */
 	public ControladorCliente() {
+		this(new BancoView());
+	}
 
-		this.vista = new BancoView();
-
+	/**
+	 * Constructor que recibe la vista ya creada (inyección), para compartir un único
+	 * Scanner en toda la aplicación en lugar de que cada controlador cree el suyo.
+	 *
+	 * @param vista vista compartida
+	 */
+	public ControladorCliente(IVista vista) {
+		this.vista = vista;
 		this.gestorCliente = new GestorCliente();
 		this.gestorCuentaBancaria = new GestorCuentaBancaria();
 	}
@@ -73,7 +81,20 @@ public class ControladorCliente {
 		// NOTA (B3): c.getNumCuenta() contiene el id_cuenta_usuario devuelto por el login.
 		// Se asume que en la BD id_cuenta_usuario coincide con id_usuario. Verificar con
 		// el esquema de la BD; si no coinciden, pasar aquí el id_usuario correcto.
-		gestorCliente.cargarCliente(c.getNumCuenta()); // el GESTOR carga el cliente desde la BD
+		operar(c.getNumCuenta());
+	}
+
+	/**
+	 * Carga un cliente por su id (con sus cuentas) y lanza su menú de cuentas.
+	 * Lo usa tanto el login (iniciar) como el empleado, para "ponerse en la piel"
+	 * de ese cliente y operar sus cuentas con el mismo menú.
+	 *
+	 * @param idCliente id del cliente a gestionar
+	 * @author Raul
+	 * @version 0.2
+	 */
+	public void operar(int idCliente) {
+		gestorCliente.cargarCliente(idCliente); // el GESTOR carga el cliente desde la BD
 		gestorCuentaBancaria.cargarCuentas(gestorCliente.cogerCliente().getCuentasBancarias());
 		iniciarMenu();
 	}

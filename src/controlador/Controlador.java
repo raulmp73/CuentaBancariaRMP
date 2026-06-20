@@ -38,6 +38,7 @@ public class Controlador {
 	// controladores
 
 	private ControladorCliente CCliente;
+	private ControladorEmpleado CEmpleado;
 	// Vista
 	private IVista vista;
 
@@ -50,11 +51,12 @@ public class Controlador {
 	// Constructor
 	public Controlador() {
 
-		// controlador
-		CCliente = new ControladorCliente();
-
-		// Vista
+		// Vista (una sola, compartida por todos los controladores -> un único Scanner)
 		this.vista = new BancoView();
+
+		// Controladores (reciben la vista compartida)
+		CCliente = new ControladorCliente(vista);
+		CEmpleado = new ControladorEmpleado(vista);
 
 		// DAO
 		this.cuentaUsuarioDAO = new CuentaUsuarioDAO();
@@ -91,6 +93,7 @@ public class Controlador {
 	 */
 	public void iniciarSesion()  {
 
+		
 		String email;
 		String contraseña;
 		int intentos = 0;
@@ -100,9 +103,9 @@ public class Controlador {
 			try {
 				cuenta = gestorCuentaUsuario.iniciarCuenta(cuenta, cuentaUsuarioDAO);
 				switch (cuenta.getTipo()) {
-					case "cliente": { CCliente.iniciar(cuenta); break; }
-					case "empleado": { System.out.println("admin"); break; }
-					case "admin": { System.out.println("empleado"); break; }
+					case "cliente":       { CCliente.iniciar(cuenta);  break; }
+					case "empleado":      { CEmpleado.iniciar(cuenta); break; }
+					case "administrador": { vista.mostrarMensaje("Panel de administrador todavía no implementado."); break; }
 				}
 			} catch (EmailyContraseñaInvalidos e) {
 				vista.mostrarMensaje(e.getMessage());
@@ -117,6 +120,7 @@ public class Controlador {
 	/**
 	 * //usuarioActivo = gestorUsuarios.login(email, password);
 	 * 
+	 * HASTA AL POLLA
 	 * 
 	 * //if (usuarioActivo == null) { // vista.mostrarMensaje("Credenciales
 	 * incorrectas. Intenta de nuevo."); //}

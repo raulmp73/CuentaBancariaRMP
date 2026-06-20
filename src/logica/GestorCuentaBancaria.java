@@ -63,6 +63,34 @@ public class GestorCuentaBancaria {
         c.setOperaciones(cuentaBancariaDAO.cargarOperaciones(c.getId())); // recarga las operaciones desde la BD
     }
 
+    /**
+     * Entrega de dinero en efectivo por ventanilla (operación de empleado).
+     *
+     * Funciona como una retirada normal sobre la cuenta del cliente (valida, baja el
+     * saldo y registra un RETIRO), pero pensada para que el empleado entregue el
+     * dinero físicamente. El desglose en billetes/monedas lo calcula el controlador
+     * con {@link Util.DesgloseEfectivo} a partir del importe.
+     *
+     * @param c        cuenta del cliente de la que se saca el efectivo
+     * @param cantidad importe a entregar
+     */
+    public void darEfectivo(CuentaBancaria c, double cantidad) {
+
+        // Validaciones (lanzan excepción si algo no cuadra)
+        inputValid.validarImporte(cantidad);            // ImporteInvalido si <= 0
+        inputValid.validarSaldoSuficiente(c, cantidad); // SaldoInsuficiente si no hay saldo
+
+        // 1) Guardamos en la BD (saldo + operación RETIRO, en una transacción)
+        boolean guardado = cuentaBancariaDAO.retirar(c.getId(), cantidad, "Entrega de efectivo en oficina");
+        if (!guardado) {
+            throw new ErrorEnOperacion("No se ha podido entregar el efectivo");
+        }
+
+        // 2) Reflejamos el cambio en memoria:
+        c.retirar(cantidad);                                             // baja el saldo
+        c.setOperaciones(cuentaBancariaDAO.cargarOperaciones(c.getId())); // recarga las operaciones desde la BD
+    }
+
     public void pagarConTarjeta(CuentaBancaria c, double cantidad, String concepto) {
 
         // Validaciones (lanzan excepción si algo no cuadra)

@@ -59,14 +59,16 @@ public class BancoView implements IVista {
 
     @Override
     public int menuEmpleado() {
-        msj.msj("\n===================");
-        msj.msj("= Menú Empleado   =");
-        msj.msj("===================");
-        msj.msj("1. Agregar nuevo cliente / cuenta");
-        msj.msj("2. Operar con cuentas de clientes");
-        msj.msj("3. Salir");
+        msj.msj("\n══════════════════════════════");
+        msj.msj("=        Menú Empleado       =");
+        msj.msj("══════════════════════════════");
+        msj.msj("1. Crear cliente nuevo");
+        msj.msj("2. Añadir cuenta a un cliente");
+        msj.msj("3. Gestionar cuentas de un cliente");
+        msj.msj("4. Dar efectivo a un cliente");
+        msj.msj("0. Salir");
         msj.msjSinSalto("\nElige una opción: ");
-        return capturarEntero();
+        return input.readInt(sc);
     }
 
     @Override
