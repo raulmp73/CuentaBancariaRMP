@@ -2,9 +2,16 @@ package logica;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import modelo.Administrador;
 import modelo.Usuario;
 
+/**
+ * Gestiona la lógica relacionada con los administradores del sistema.
+ *
+ * @author Raul
+ * @version 0.2
+ */
 public class GestorAdministrador {
     private ArrayList<Administrador> administradores;
 
@@ -29,4 +36,5 @@ public class GestorAdministrador {
 
     public ArrayList<Administrador> getAdministradores() { return administradores; }
     public void setAdministradores(ArrayList<Administrador> administradores) { this.administradores = administradores; }
+    
 }

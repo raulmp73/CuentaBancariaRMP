@@ -1,35 +1,36 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public class CuentaBancaria extends Usuario {
-	private String Titular;
-	private double Saldo, Interes;
+/**
+ * Representa una cuenta bancaria con su saldo, IBAN, estado y operaciones asociadas.
+ *
+ * Corregido en la versión 0.2: eliminado el campo duplicado "Saldo"; ahora solo
+ * existe el campo "saldo".
+ *
+ * @author Raul
+ * @version 0.2
+ */
+public class CuentaBancaria{
+    private int id;
     private String iban;
     private double saldo;
     private boolean activa = true;
     private ArrayList<Operacion> operaciones;
 
-    public CuentaBancaria() {
-        this.operaciones = new ArrayList<>();
-    }
 
 
-    public String getTitular() {
-		return Titular;
+	public CuentaBancaria(int id, double saldo, String iban, boolean activa,
+			ArrayList<Operacion> operaciones) {
+		this.id = id;
+		this.saldo = saldo;
+		this.iban = iban;
+		this.activa = activa;
+		this.operaciones = operaciones;
 	}
 
-	public void setTitular(String titular) {
-		Titular = titular;
-	}
 
-	public double getInteres() {
-		return Interes;
-	}
-
-	public void setInteres(double interes) {
-		Interes = interes;
-	}
 
 	public void ingresar(double cantidad) {
         this.saldo += cantidad;
@@ -59,11 +60,14 @@ public class CuentaBancaria extends Usuario {
     }
 
 
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
     public String getIban() { return iban; }
     public void setIban(String iban) { this.iban = iban; }
 
-    public double getSaldo() { return Saldo; }
-    public void setSaldo(double Saldo) { this.Saldo = Saldo; }
+    public double getSaldo() { return saldo; }
+    public void setSaldo(double saldo) { this.saldo = saldo; }
 
     public void setActiva(boolean activa) { this.activa = activa; }
 
@@ -71,6 +75,6 @@ public class CuentaBancaria extends Usuario {
 
     @Override
     public String toString() {
-        return "CuentaBancaria [idCuenta="  + ", iban=" + iban + ", saldo=" + saldo + "]";
+        return "CuentaBancaria [idCuenta=" + id + ", iban=" + iban + ", saldo=" + saldo + "]";
     }
 }
